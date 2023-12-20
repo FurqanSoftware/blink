@@ -1,0 +1,29 @@
+package main
+
+import (
+	"log"
+
+	_ "github.com/FurqanSoftware/blink/site/com.cppreference"
+	"github.com/spf13/cobra"
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "blink",
+	Short: "Blink is a programming language reference scraping and mirroring tool",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
+}
+
+func main() {
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func catch(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
