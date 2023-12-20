@@ -9,7 +9,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "blink",
-	Short: "Blink is a programming language reference scraping and mirroring tool",
+	Short: "Blink is a programming language documentation and reference scraping and mirroring tool",
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},

@@ -1,3 +1,3 @@
 # Blink
 
-Blink is a programming language reference scraping and mirroring tool.
+Blink is a programming language documentation and reference scraping and mirroring tool.
