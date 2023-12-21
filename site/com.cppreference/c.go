@@ -52,6 +52,7 @@ func C() site.Site {
 						"t-li1",
 					),
 				// pipe.CleanStyles(),
+				Heading(baseURL, "C Programming Language"),
 			),
 		),
 		site.TrimPathPrefix("/w/c"),

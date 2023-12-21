@@ -16,7 +16,7 @@ func CleanHTML() pipe.Filter {
 		"\n</p>\n", "</p>\n",
 	)
 
-	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
+	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
 		p.Doc.Find("div > span.source-c, div > span.source-cpp").Each(func(_ int, s *goquery.Selection) {
 			p := s.Parent()
 			p.AddClass(s.AttrOr("class", ""))
@@ -29,8 +29,6 @@ func CleanHTML() pipe.Filter {
 			}
 			s.SetHtml(codeLineBreakReplacer.Replace(html))
 		})
-
-		p.Doc.Find("h1").Remove()
 
 		p.Doc.Find(".t-dcl-rev-aux td[rowspan]").Each(func(_ int, s *goquery.Selection) {
 			rowspan, err := strconv.Atoi(s.AttrOr("rowspan", ""))
