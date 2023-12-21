@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -44,6 +46,8 @@ func (r Scraper) Run(ctx context.Context, s Site) error {
 	marktree := map[string][]Mark{}
 	redirects := map[string]string{}
 
+	b := bytes.Buffer{}
+
 L:
 	for {
 		select {
@@ -77,7 +81,22 @@ L:
 					})
 				}
 
-				err = r.writePage(s, x, p, m)
+				b.Reset()
+				err = r.makePage(&b, s, x, p, m)
+				if err != nil {
+					return err
+				}
+
+				same, err := r.isPageSame(s, x, b.Bytes())
+				if err != nil {
+					return err
+				}
+				if same {
+					continue
+				}
+
+				log.Print("[S] Writing page")
+				err = r.writePage(s, x, b.Bytes())
 				if err != nil {
 					return err
 				}
@@ -123,14 +142,54 @@ L:
 	return nil
 }
 
-func (r Scraper) writePage(s Site, x pipe.Context, p pipe.Page, m *minify.M) error {
-	outPath := filepath.Join("out", s.key, strings.TrimPrefix(x.URL.Path, s.trimPathPrefix), "index.html")
-	dirPath := filepath.Dir(outPath)
-	err := os.MkdirAll(dirPath, 0755)
+func (r Scraper) makePage(b io.Writer, s Site, x pipe.Context, p pipe.Page, m *minify.M) error {
+	html, err := p.Doc.Find("body").Html()
 	if err != nil {
 		return err
 	}
-	html, err := p.Doc.Find("body").Html()
+	_, err = fmt.Fprintln(b, "---")
+	if err != nil {
+		return err
+	}
+	err = yaml.NewEncoder(b).Encode(p.Meta)
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintln(b, "---")
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintln(b)
+	if err != nil {
+		return err
+	}
+	err = m.Minify("text/html", b, strings.NewReader(html))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r Scraper) isPageSame(s Site, x pipe.Context, b []byte) (bool, error) {
+	outPath := filepath.Join("out", s.key, strings.TrimPrefix(x.URL.Path, s.trimPathPrefix), "index.html")
+	f, err := os.Open(outPath)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	t, err := io.ReadAll(f)
+	if err != nil {
+		return false, err
+	}
+	return bytes.Equal(b, t), nil
+}
+
+func (r Scraper) writePage(s Site, x pipe.Context, b []byte) error {
+	outPath := filepath.Join("out", s.key, strings.TrimPrefix(x.URL.Path, s.trimPathPrefix), "index.html")
+	dirPath := filepath.Dir(outPath)
+	err := os.MkdirAll(dirPath, 0755)
 	if err != nil {
 		return err
 	}
@@ -138,23 +197,7 @@ func (r Scraper) writePage(s Site, x pipe.Context, p pipe.Page, m *minify.M) err
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintln(f, "---")
-	if err != nil {
-		return err
-	}
-	err = yaml.NewEncoder(f).Encode(p.Meta)
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintln(f, "---")
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprintln(f)
-	if err != nil {
-		return err
-	}
-	err = m.Minify("text/html", f, strings.NewReader(html))
+	_, err = f.Write(b)
 	if err != nil {
 		return err
 	}
