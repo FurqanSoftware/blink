@@ -43,10 +43,14 @@ func Marks() pipe.Filter {
 
 		name := p.Doc.Find("#firstHeading").Text()
 		name = noiseReplacer.Replace(name)
+		if name != "C++ language" {
+			name = strings.ReplaceAll(name, "C++", "")
+		}
 		name = strings.TrimSpace(name)
 		for _, re := range removeRegexps {
 			name = re.ReplaceAllString(name, "")
 		}
+		name = repeatedSpaceRegexp.ReplaceAllString(name, " ")
 
 		if stdlibHeaderRegexp.MatchString(name) {
 			m := stdlibHeaderRegexp.FindStringSubmatch(name)
