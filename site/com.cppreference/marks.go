@@ -16,9 +16,11 @@ func Marks() pipe.Filter {
 		"C++ keywords:", "",
 	)
 	removeRegexps := []*regexp.Regexp{
-		regexp.MustCompile(`\(.+\)`),
+		regexp.MustCompile(`\(<.+?>\)`),
 	}
 	stdlibHeaderRegexp := regexp.MustCompile(`\AStandard library header <(.+)>\z`)
+	operatorHeaderRegexp := regexp.MustCompile(`(operator).+?(\(.+?\)|)$`)
+	repeatedSpaceRegexp := regexp.MustCompile(`\s+`)
 	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
 		kind := ""
 		if strings.Contains(p.Doc.Find("#firstHeading").Text(), "C++ keyword") {
@@ -50,6 +52,15 @@ func Marks() pipe.Filter {
 			name = m[1]
 		}
 
+		if strings.Contains(name, "operator") && strings.Contains(name, ",") {
+			name = operatorHeaderRegexp.ReplaceAllString(name, "operators $2")
+			if strings.Contains(name, "(") && !strings.HasSuffix(name, ")") {
+				name += ")"
+			}
+			name = strings.ReplaceAll(name, "()", "")
+			name = repeatedSpaceRegexp.ReplaceAllString(name, " ")
+		}
+
 		for _, name := range strings.Split(name, ",") {
 			name = strings.TrimSpace(name)
 			if name == "" {
@@ -61,8 +72,6 @@ func Marks() pipe.Filter {
 			})
 			break
 		}
-
-		p.Meta.Title = name
 
 		return p, nil
 	})
