@@ -21,6 +21,7 @@ func Marks() pipe.Filter {
 	stdlibHeaderRegexp := regexp.MustCompile(`\AStandard library header <(.+)>\z`)
 	operatorHeaderRegexp := regexp.MustCompile(`(operator).+?(\(.+?\)|)$`)
 	repeatedSpaceRegexp := regexp.MustCompile(`\s+`)
+
 	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
 		kind := ""
 		if strings.Contains(p.Doc.Find("#firstHeading").Text(), "C++ keyword") {
@@ -70,7 +71,6 @@ func Marks() pipe.Filter {
 				Kind: kind,
 				Name: name,
 			})
-			break
 		}
 
 		return p, nil
