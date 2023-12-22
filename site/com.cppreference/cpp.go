@@ -54,7 +54,7 @@ func Cpp() site.Site {
 						"t-mark-rev",
 						"t-li1",
 					),
-				// pipe.CleanStyles(),
+				pipe.CleanStyle(),
 				Heading(baseURL, "C++ Programming Language"),
 			),
 		),
