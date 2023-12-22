@@ -55,7 +55,11 @@ func Cpp() site.Site {
 						"t-li1",
 					),
 				pipe.CleanStyle(),
-				Heading(baseURL, "C++ Programming Language"),
+
+				pipe.If(pipe.IsURL(baseURL)).
+					Then(
+						Heading("C++ Programming Language"),
+					),
 			),
 		),
 		site.TrimPathPrefix("/w/cpp"),
