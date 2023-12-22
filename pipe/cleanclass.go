@@ -7,16 +7,16 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-type CleanClassNamesFilter struct {
+type CleanClassFilter struct {
 	preserveSelectors []string
 	preserveClasses   []string
 }
 
-func CleanClassNames() CleanClassNamesFilter {
-	return CleanClassNamesFilter{}
+func CleanClassName() CleanClassFilter {
+	return CleanClassFilter{}
 }
 
-func (f CleanClassNamesFilter) Apply(_ Context, p Page) (Page, error) {
+func (f CleanClassFilter) Apply(_ Context, p Page) (Page, error) {
 	p.Doc.Find("[class]").Each(func(_ int, s *goquery.Selection) {
 		if f.shouldPreserve(s) {
 			return
@@ -38,7 +38,7 @@ func (f CleanClassNamesFilter) Apply(_ Context, p Page) (Page, error) {
 	return p, nil
 }
 
-func (f CleanClassNamesFilter) shouldPreserve(s *goquery.Selection) bool {
+func (f CleanClassFilter) shouldPreserve(s *goquery.Selection) bool {
 	for _, v := range f.preserveSelectors {
 		if s.Is(v) {
 			return true
@@ -47,12 +47,12 @@ func (f CleanClassNamesFilter) shouldPreserve(s *goquery.Selection) bool {
 	return false
 }
 
-func (f CleanClassNamesFilter) WithPreserveSelectors(selectors ...string) CleanClassNamesFilter {
+func (f CleanClassFilter) WithPreserveSelectors(selectors ...string) CleanClassFilter {
 	f.preserveSelectors = append(f.preserveSelectors, selectors...)
 	return f
 }
 
-func (f CleanClassNamesFilter) WithPreserveClasses(classes ...string) CleanClassNamesFilter {
+func (f CleanClassFilter) WithPreserveClasses(classes ...string) CleanClassFilter {
 	f.preserveClasses = append(f.preserveClasses, classes...)
 	return f
 }

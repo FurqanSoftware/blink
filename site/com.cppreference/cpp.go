@@ -47,7 +47,7 @@ func Cpp() site.Site {
 					WithDisallowedURLFilters(disallowedURLFilters...).
 					WithDisallowedPaths(disallowedPaths...),
 				pipe.SyntaxHighlight(),
-				pipe.CleanClassNames().
+				pipe.CleanClassName().
 					WithPreserveClasses(
 						"t-dcl-begin",
 						"t-dsc-header",
