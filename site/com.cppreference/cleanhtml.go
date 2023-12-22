@@ -16,7 +16,7 @@ func CleanHTML() pipe.Filter {
 		"\n</p>\n", "</p>\n",
 	)
 
-	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
+	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
 		p.Doc.Find("div > span.source-c, div > span.source-cpp").Each(func(_ int, s *goquery.Selection) {
 			p := s.Parent()
 			p.AddClass(s.AttrOr("class", ""))
@@ -49,12 +49,6 @@ func CleanHTML() pipe.Filter {
 			s.BeforeSelection(s.Contents())
 			s.Remove()
 		})
-
-		// p.Doc.Find("div > ul").Each(func(_ int, s *goquery.Selection) {
-		// 	p := s.Parent()
-		// 	p.BeforeSelection(p.Contents())
-		// 	p.Remove()
-		// })
 
 		p.Doc.Find("h2 > span[id], h3 > span[id], h4 > span[id], h5 > span[id], h6 > span[id]").Each(func(_ int, s *goquery.Selection) {
 			s.Parent().SetAttr("id", s.AttrOr("id", ""))
