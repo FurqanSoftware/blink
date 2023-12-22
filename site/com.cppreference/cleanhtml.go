@@ -30,6 +30,8 @@ func CleanHTML() pipe.Filter {
 			s.SetHtml(codeLineBreakReplacer.Replace(html))
 		})
 
+		p.Doc.Find("h1").SetText(p.Doc.Find("h1").Text())
+
 		p.Doc.Find(".t-dcl-rev-aux td[rowspan]").Each(func(_ int, s *goquery.Selection) {
 			rowspan, err := strconv.Atoi(s.AttrOr("rowspan", ""))
 			if err != nil {

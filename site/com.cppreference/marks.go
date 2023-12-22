@@ -22,6 +22,7 @@ func Marks() pipe.Filter {
 	templateParametersRegexp := regexp.MustCompile(`(<[^>]+>)`)
 	operatorHeaderRegexp := regexp.MustCompile(`(operator).+?(\(.+?\)|)$`)
 	repeatedSpaceRegexp := regexp.MustCompile(`\s+`)
+	angleBracketStartRegexp := regexp.MustCompile(`\A[<>]`)
 
 	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
 		kind := ""
@@ -71,7 +72,7 @@ func Marks() pipe.Filter {
 
 		for _, name := range strings.Split(name, ",") {
 			name = strings.TrimSpace(name)
-			if name == "" {
+			if name == "" || len(name) <= 2 || name == "..." || angleBracketStartRegexp.MatchString(name) || strings.HasPrefix(name, "operator") {
 				continue
 			}
 			p.Marks = append(p.Marks, pipe.Mark{
