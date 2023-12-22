@@ -19,6 +19,7 @@ func Marks() pipe.Filter {
 		regexp.MustCompile(`\(<.+?>\)`),
 	}
 	stdlibHeaderRegexp := regexp.MustCompile(`\AStandard library header <(.+)>\z`)
+	templateParametersRegexp := regexp.MustCompile(`(<[^>]+>)`)
 	operatorHeaderRegexp := regexp.MustCompile(`(operator).+?(\(.+?\)|)$`)
 	repeatedSpaceRegexp := regexp.MustCompile(`\s+`)
 
@@ -56,6 +57,8 @@ func Marks() pipe.Filter {
 			m := stdlibHeaderRegexp.FindStringSubmatch(name)
 			name = m[1]
 		}
+
+		name = templateParametersRegexp.ReplaceAllString(name, "") // std::mersenne_twister_engine<UIntType,w,n,m,r,a,u,d,s,b,t,c,l,f>::seed → std::mersenne_twister_engine::seed
 
 		if strings.Contains(name, "operator") && strings.Contains(name, ",") {
 			name = operatorHeaderRegexp.ReplaceAllString(name, "operators $2")
