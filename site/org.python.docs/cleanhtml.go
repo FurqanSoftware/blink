@@ -9,6 +9,8 @@ import (
 )
 
 func CleanHTML() pipe.Filter {
+	headingNumberRegexp := regexp.MustCompile(`\A[\d\.]+\s+\z`)
+
 	codeLangRegexpes := []*regexp.Regexp{
 		regexp.MustCompile(`code (\w+) highlight`),
 		regexp.MustCompile(`highlight\-([\w\+]+)`),
@@ -16,11 +18,13 @@ func CleanHTML() pipe.Filter {
 	}
 
 	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
-		p.Doc.Find(".headerlink, hr, #contents .topic-title, #topics .topic-title, colgroup, .line-block, .anchor-link, #reference-index").Remove()
+		p.Doc.Find(".headerlink, hr, #contents .topic-title, #topics .topic-title, colgroup, .line-block, .anchor-link").Remove()
 
-		p.Doc.Find("#the-python-language-reference").Each(func(_ int, s *goquery.Selection) {
-			s.BeforeSelection(s.Contents())
-			s.Remove()
+		p.Doc.Find("h1").Each(func(_ int, s *goquery.Selection) {
+			span := s.Find("span")
+			if span.Children().Length() == 0 && headingNumberRegexp.MatchString(span.Text()) {
+				span.Remove()
+			}
 		})
 
 		p.Doc.Find(`div[class*="highlight-"], div[class*="hl-"]`).Each(func(_ int, s *goquery.Selection) {
@@ -40,6 +44,16 @@ func CleanHTML() pipe.Filter {
 			}
 			pre.SetAttr("data-language", lang)
 			s.ReplaceWithSelection(pre)
+		})
+
+		p.Doc.Find("span[id]:empty").Each(func(_ int, s *goquery.Selection) {
+			next := s.Next()
+			if next.Length() > 0 {
+				if next.AttrOr("id", "") == "" {
+					next.SetAttr("id", s.AttrOr("id", ""))
+				}
+			}
+			s.Remove()
 		})
 
 		return p, nil

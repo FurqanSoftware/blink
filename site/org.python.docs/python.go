@@ -47,7 +47,7 @@ func Python(versionShort, zipName, basePath string) site.Site {
 				Marks(),
 				Meta(),
 				CleanHTML(),
-				pipe.Container(`.body[role="main"]`),
+				pipe.Container(`.body > section[id]`, `.body`),
 				pipe.RewriteURLs(
 					"org.python.docs/python-"+versionShort,
 					"http://localhost:24488"+basePath,

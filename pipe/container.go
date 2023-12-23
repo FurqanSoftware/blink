@@ -1,9 +1,16 @@
 package pipe
 
-func Container(selector string) Filter {
+func Container(selectors ...string) Filter {
 	return FilterFunc(func(x Context, p Page) (Page, error) {
-		html, _ := p.Doc.Find(selector).First().Html()
-		p.Doc.Find("body").SetHtml(html)
+		for _, selector := range selectors {
+			s := p.Doc.Find(selector)
+			if s.Length() == 0 {
+				continue
+			}
+			html, _ := s.First().Html()
+			p.Doc.Find("body").SetHtml(html)
+			break
+		}
 		return p, nil
 	})
 }
