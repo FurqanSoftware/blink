@@ -86,3 +86,8 @@ func Marks() pipe.Filter {
 		return p, nil
 	})
 }
+
+// Some CSS selectors and transformaton rules in this file were adapted from DevDocs:
+// - https://github.com/freeCodeCamp/devdocs/blob/ab9aeb2622838131574023ea3a01e933e2c770df/lib/docs/filters/python/entries_v3.rb
+//
+// DevDocs is licensed under the terms of the Mozilla Public License v2.0.
