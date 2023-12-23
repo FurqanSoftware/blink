@@ -28,7 +28,6 @@ func Python(versionShort, zipName, basePath string) site.Site {
 		zipName,
 		basePath+"/index.html",
 		fs.WebOptions(
-			web.AllowedDomains("localhost"),
 			web.URLFilters(urlFilters...),
 			web.DisallowedURLFilters(disallowedURLFilters...),
 			web.DisallowedPaths(disallowedPaths...),
@@ -59,15 +58,9 @@ func Python(versionShort, zipName, basePath string) site.Site {
 					WithPrefixMappings(
 						"http://localhost:24488"+basePath, "https://docs.python.org/"+versionShort,
 					),
-				pipe.SyntaxHighlight(),
-				pipe.CleanClassName().
-					WithPreserveClasses(
-						"t-dcl-begin",
-						"t-dsc-header",
-						"t-mark-rev",
-						"t-li1",
-					),
+				pipe.CleanClassName(),
 				pipe.CleanStyle(),
+				pipe.SyntaxHighlight(),
 
 				pipe.If(pipe.IsPath(basePath+"/")).
 					Then(

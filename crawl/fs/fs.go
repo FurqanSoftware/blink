@@ -62,7 +62,10 @@ func (c Crawler) Run(entityCh chan<- crawl.Entity) error {
 		return err
 	}
 	url.Path = c.startPath
-	webOptions := c.webOptions
+	webOptions := []web.Option{
+		web.AllowedDomains("localhost"),
+	}
+	webOptions = append(webOptions, c.webOptions...)
 	webOptions = append(webOptions, web.DisableCache())
 	webCrawler := web.New(url.String(), webOptions...)
 	return webCrawler.Run(entityCh)
