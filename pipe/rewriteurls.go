@@ -38,17 +38,19 @@ func (f RewriteURLsFilter) Apply(x Context, p Page) (Page, error) {
 	}
 
 	p.Doc.Find("a[href]").Each(func(_ int, s *goquery.Selection) {
-		href := s.AttrOr("href", "")
-		if href == "" {
+		href := ""
+		u, err := f.absoluteURL(baseURL, s.AttrOr("href", ""), x.URL.Scheme)
+		if err != nil {
 			return
 		}
-		href = f.absoluteURL(baseURL, href, x.URL.Scheme)
-		if !f.isInternal(href) {
+		if !f.isInternal(u) {
 			s.AddClass("Ƀexternal")
+			href = u.String()
 		} else {
+			u.Path = strings.TrimSuffix(u.Path, ".html")
+			href = u.String()
 			href = strings.TrimPrefix(href, f.rootURL)
 			href = path.Join("/"+f.siteKey, href)
-			href = strings.TrimSuffix(href, ".html")
 		}
 		for from, to := range f.prefixMappings {
 			if strings.HasPrefix(href, from) {
@@ -61,17 +63,17 @@ func (f RewriteURLsFilter) Apply(x Context, p Page) (Page, error) {
 	return p, nil
 }
 
-func (f RewriteURLsFilter) isInternal(url string) bool {
+func (f RewriteURLsFilter) isInternal(u *url.URL) bool {
 	if len(f.disallowedURLFilters) > 0 {
 		for _, f := range f.disallowedURLFilters {
-			if f.MatchString(url) {
+			if f.MatchString(u.String()) {
 				return false
 			}
 		}
 	}
 	if len(f.urlFilters) > 0 {
 		for _, f := range f.urlFilters {
-			if f.MatchString(url) {
+			if f.MatchString(u.String()) {
 				return true
 			}
 		}
@@ -108,13 +110,13 @@ func (f RewriteURLsFilter) WithPrefixMappings(fromto ...string) RewriteURLsFilte
 	return f
 }
 
-func (f RewriteURLsFilter) absoluteURL(baseURL *url.URL, ref string, scheme string) string {
-	url, err := baseURL.Parse(ref)
+func (f RewriteURLsFilter) absoluteURL(baseURL *url.URL, ref string, scheme string) (*url.URL, error) {
+	u, err := baseURL.Parse(ref)
 	if err != nil {
-		return ""
+		return nil, err
 	}
-	if url.Scheme == "//" {
-		url.Scheme = scheme
+	if u.Scheme == "//" {
+		u.Scheme = scheme
 	}
-	return url.String()
+	return u, nil
 }
