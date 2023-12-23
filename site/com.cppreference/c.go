@@ -43,7 +43,6 @@ func C() site.Site {
 					WithURLFilters(urlFilters...).
 					WithDisallowedURLFilters(disallowedURLFilters...).
 					WithDisallowedPaths(disallowedPaths...),
-				pipe.SyntaxHighlight(),
 				pipe.CleanClassName().
 					WithPreserveClasses(
 						"t-dcl-begin",
@@ -52,6 +51,7 @@ func C() site.Site {
 						"t-li1",
 					),
 				pipe.CleanStyle(),
+				pipe.SyntaxHighlight(),
 
 				pipe.If(pipe.IsURL(baseURL)).
 					Then(
