@@ -27,7 +27,6 @@ func Marks() pipe.Filter {
 	dashSuffixRegexp := regexp.MustCompile(` [` + "\u2013\u2014" + `].+\z`)
 
 	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
-
 		name := p.Doc.Find("h1").Text()
 		name = headingNumberRegexp.ReplaceAllString(name, "")
 		name = strings.ReplaceAll(name, "\u00b6", "")
@@ -43,9 +42,7 @@ func Marks() pipe.Filter {
 			kind = "Python/C API"
 		case strings.HasPrefix(x.Path, "/tutorial"):
 			kind = "Tutorial"
-		case strings.HasPrefix(x.Path, "/distributing"):
-			kind = "Software Packaging & Distribution"
-		case strings.HasPrefix(x.Path, "/distutils"):
+		case strings.HasPrefix(x.Path, "/distributing"), strings.HasPrefix(x.Path, "/distutils"):
 			kind = "Software Packaging & Distribution"
 		case strings.HasPrefix(x.Path, "/glossary"):
 			kind = "Glossary"
