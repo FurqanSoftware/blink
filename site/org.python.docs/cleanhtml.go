@@ -16,7 +16,12 @@ func CleanHTML() pipe.Filter {
 	}
 
 	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
-		p.Doc.Find(".headerlink, hr, #contents .topic-title, #topics .topic-title, colgroup, .line-block, .anchor-link").Remove()
+		p.Doc.Find(".headerlink, hr, #contents .topic-title, #topics .topic-title, colgroup, .line-block, .anchor-link, #reference-index").Remove()
+
+		p.Doc.Find("#the-python-language-reference").Each(func(_ int, s *goquery.Selection) {
+			s.BeforeSelection(s.Contents())
+			s.Remove()
+		})
 
 		p.Doc.Find(`div[class*="highlight-"], div[class*="hl-"]`).Each(func(_ int, s *goquery.Selection) {
 			pre := s.Find("pre")
