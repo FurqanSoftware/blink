@@ -65,7 +65,8 @@ L:
 				}
 
 				x := pipe.Context{
-					URL: entity.Request.URL,
+					URL:  entity.Request.URL,
+					Path: strings.TrimPrefix(strings.TrimSuffix(entity.Request.URL.Path, ".html"), s.trimPathPrefix),
 				}
 				p, err := s.pipeline.Process(x, pipe.Page{
 					Doc: d,
@@ -77,7 +78,7 @@ L:
 				for _, m := range p.Marks {
 					marktree[m.Kind] = append(marktree[m.Kind], Mark{
 						Name: m.Name,
-						Path: strings.TrimPrefix(x.URL.Path, s.trimPathPrefix),
+						Path: x.Path,
 					})
 				}
 
@@ -175,7 +176,7 @@ func (r Scraper) makePage(b io.Writer, s Site, x pipe.Context, p pipe.Page, m *m
 }
 
 func (r Scraper) isPageSame(s Site, x pipe.Context, b []byte) (bool, error) {
-	outPath := filepath.Join("out", s.key, strings.TrimPrefix(strings.TrimSuffix(x.URL.Path, ".html"), s.trimPathPrefix), "index.html")
+	outPath := filepath.Join("out", s.key, x.Path, "index.html")
 	f, err := os.Open(outPath)
 	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
@@ -191,7 +192,7 @@ func (r Scraper) isPageSame(s Site, x pipe.Context, b []byte) (bool, error) {
 }
 
 func (r Scraper) writePage(s Site, x pipe.Context, b []byte) error {
-	outPath := filepath.Join("out", s.key, strings.TrimPrefix(strings.TrimSuffix(x.URL.Path, ".html"), s.trimPathPrefix), "index.html")
+	outPath := filepath.Join("out", s.key, x.Path, "index.html")
 	dirPath := filepath.Dir(outPath)
 	err := os.MkdirAll(dirPath, 0755)
 	if err != nil {

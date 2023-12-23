@@ -7,7 +7,8 @@ import (
 )
 
 type Context struct {
-	URL *url.URL
+	URL  *url.URL
+	Path string
 }
 
 type Page struct {
