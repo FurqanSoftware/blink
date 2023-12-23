@@ -15,25 +15,31 @@ func (f OptionFunc) Apply(c *Crawler) {
 	f(c)
 }
 
-func AllowedDomains(domains ...string) OptionFunc {
+func DisableCache() Option {
+	return OptionFunc(func(c *Crawler) {
+		c.disableCache = true
+	})
+}
+
+func AllowedDomains(domains ...string) Option {
 	return OptionFunc(func(c *Crawler) {
 		c.allowedDomains = append(c.allowedDomains, domains...)
 	})
 }
 
-func URLFilters(filters ...*regexp.Regexp) OptionFunc {
+func URLFilters(filters ...*regexp.Regexp) Option {
 	return OptionFunc(func(c *Crawler) {
 		c.urlFilters = append(c.urlFilters, filters...)
 	})
 }
 
-func DisallowedURLFilters(filters ...*regexp.Regexp) OptionFunc {
+func DisallowedURLFilters(filters ...*regexp.Regexp) Option {
 	return OptionFunc(func(c *Crawler) {
 		c.disallowedURLFilters = append(c.disallowedURLFilters, filters...)
 	})
 }
 
-func DisallowedPaths(paths ...string) OptionFunc {
+func DisallowedPaths(paths ...string) Option {
 	return OptionFunc(func(c *Crawler) {
 		startURL, _ := url.Parse(c.startURL)
 		filters := make([]*regexp.Regexp, 0, len(paths))

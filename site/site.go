@@ -12,13 +12,15 @@ type Site struct {
 	trimPathPrefix       string
 	title                string
 	attributionContentMd string
+	redirects            map[string]string
 }
 
 func New(key string, crawler crawl.Crawler, pipeline pipe.Pipeline, options ...Option) Site {
 	s := Site{
-		key:      key,
-		crawler:  crawler,
-		pipeline: pipeline,
+		key:       key,
+		crawler:   crawler,
+		pipeline:  pipeline,
+		redirects: map[string]string{},
 	}
 	for _, o := range options {
 		o.Apply(&s)

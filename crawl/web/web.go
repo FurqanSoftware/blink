@@ -12,6 +12,7 @@ import (
 
 type Crawler struct {
 	startURL             string
+	disableCache         bool
 	allowedDomains       []string
 	urlFilters           []*regexp.Regexp
 	disallowedURLFilters []*regexp.Regexp
@@ -30,8 +31,9 @@ func New(startURL string, options ...Option) Crawler {
 }
 
 func (c Crawler) Run(entityCh chan<- crawl.Entity) error {
-	options := []colly.CollectorOption{
-		colly.CacheDir(".colly-cache"),
+	options := []colly.CollectorOption{}
+	if !c.disableCache {
+		options = append(options, colly.CacheDir(".colly-cache"))
 	}
 	if c.allowedDomains != nil {
 		options = append(options, colly.AllowedDomains(c.allowedDomains...))

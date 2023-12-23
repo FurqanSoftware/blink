@@ -14,12 +14,14 @@ type RewriteURLsFilter struct {
 	rootURL              string
 	urlFilters           []*regexp.Regexp
 	disallowedURLFilters []*regexp.Regexp
+	prefixMappings       map[string]string
 }
 
 func RewriteURLs(siteKey string, rootURL string) RewriteURLsFilter {
 	return RewriteURLsFilter{
-		siteKey: siteKey,
-		rootURL: rootURL,
+		siteKey:        siteKey,
+		rootURL:        rootURL,
+		prefixMappings: map[string]string{},
 	}
 }
 
@@ -42,11 +44,18 @@ func (f RewriteURLsFilter) Apply(x Context, p Page) (Page, error) {
 		}
 		href = f.absoluteURL(baseURL, href, x.URL.Scheme)
 		if !f.isInternal(href) {
-			s.SetAttr("href", href).AddClass("Ƀexternal")
-			return
+			s.AddClass("Ƀexternal")
+		} else {
+			href = strings.TrimPrefix(href, f.rootURL)
+			href = path.Join("/"+f.siteKey, href)
+			href = strings.TrimSuffix(href, ".html")
 		}
-		href = strings.TrimPrefix(href, f.rootURL)
-		href = path.Join("/"+f.siteKey, href)
+		for from, to := range f.prefixMappings {
+			if strings.HasPrefix(href, from) {
+				href = to + strings.TrimPrefix(href, from)
+				break
+			}
+		}
 		s.SetAttr("href", href)
 	})
 	return p, nil
@@ -89,6 +98,13 @@ func (f RewriteURLsFilter) WithDisallowedPaths(paths ...string) RewriteURLsFilte
 		filters = append(filters, regexp.MustCompile("^"+regexp.QuoteMeta(url.String())))
 	}
 	f.disallowedURLFilters = append(f.disallowedURLFilters, filters...)
+	return f
+}
+
+func (f RewriteURLsFilter) WithPrefixMappings(fromto ...string) RewriteURLsFilter {
+	for i := 0; i < len(fromto); i += 2 {
+		f.prefixMappings[fromto[i]] = fromto[i+1]
+	}
 	return f
 }
 

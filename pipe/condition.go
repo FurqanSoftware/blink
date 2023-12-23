@@ -51,3 +51,9 @@ func IsURL(url string) Clause {
 		return x.URL.String() == url
 	})
 }
+
+func IsPath(path string) Clause {
+	return ClauseFunc(func(x Context, p Page) bool {
+		return x.URL.Path == path
+	})
+}

@@ -27,3 +27,11 @@ func TrimPathPrefix(prefix string) Option {
 		s.trimPathPrefix = prefix
 	})
 }
+
+func Redirects(fromto ...string) Option {
+	return OptionFunc(func(s *Site) {
+		for i := 0; i < len(fromto); i += 2 {
+			s.redirects[fromto[i]] = fromto[i+1]
+		}
+	})
+}
