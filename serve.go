@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"time"
 
 	"github.com/FurqanSoftware/blink/pipe"
 	"github.com/adrg/frontmatter"
@@ -19,12 +21,7 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Serve serves scraped programming language references",
 	Run: func(cmd *cobra.Command, args []string) {
-		exitCh := make(chan struct{})
 		errCh := make(chan error)
-
-		ctx := context.Background()
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
 
 		http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFile(w, r, "serve/style.css")
@@ -51,26 +48,33 @@ var serveCmd = &cobra.Command{
 			catch(err)
 		})
 
+		srv := &http.Server{
+			Addr:    fmt.Sprintf(":8080"),
+			Handler: nil,
+		}
 		go func() {
-			err := http.ListenAndServe(":8080", nil)
+			log.Printf("Listening on %s", srv.Addr)
+			err := srv.ListenAndServe()
 			if err != nil {
 				errCh <- err
 			}
-			close(exitCh)
 		}()
 
-		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, os.Interrupt)
+		sigch := make(chan os.Signal, 2)
+		signal.Notify(sigch, os.Interrupt)
 
 		select {
 		case err := <-errCh:
 			log.Fatal(err)
 
-		case <-exitCh:
-
-		case sig := <-sigCh:
+		case sig := <-sigch:
 			log.Printf("Received %s; exiting", sig)
 		}
+
+		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(7*time.Second))
+		defer cancel()
+		err := srv.Shutdown(ctx)
+		catch(err)
 
 		log.Print("Bye")
 	},
