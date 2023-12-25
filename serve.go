@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -49,7 +48,7 @@ var serveCmd = &cobra.Command{
 		})
 
 		srv := &http.Server{
-			Addr:    fmt.Sprintf(":8080"),
+			Addr:    ":8080",
 			Handler: nil,
 		}
 		go func() {
