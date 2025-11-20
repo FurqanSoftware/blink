@@ -11,7 +11,11 @@ import (
 )
 
 func CleanHTML() pipe.Filter {
-	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
+	return pipe.FilterFunc(func(x pipe.Context, p pipe.Page) (pipe.Page, error) {
+		if x.Path == "/" {
+			p.Doc.Find("#manual-nav").Remove()
+		}
+
 		p.Doc.Find(`
 			#stdlib div:has(h2:contains("▹")),
 			#pkg-overview div:has(h2:contains("▹")),
