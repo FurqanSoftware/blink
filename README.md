@@ -4,11 +4,11 @@ Blink is a programming language documentation and reference scraping and mirrori
 
 ## Usage
 
-Crawl and process documentation using the `crawl` subcommand. It should store the processed HTML files under the `out/` directory.
+Crawl and process documentation using the `scrape` subcommand. It should store the processed HTML files under the `out/` directory.
 
 ``` sh
-./blink crawl com.cppreference/c
-./blink crawl com.cppreference/cpp
+./blink scrape com.cppreference/c
+./blink scrape com.cppreference/cpp
 ```
 
 The contents of the `out/` directory can work statically. You can also use the `serve` subcommand to run a local file server against the `out/` directory and serve the processed documentation with some styling applied.
