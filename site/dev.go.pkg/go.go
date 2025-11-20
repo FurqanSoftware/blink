@@ -17,7 +17,7 @@ func Go() site.Site {
 	disallowedPaths := []string{}
 
 	return site.New(
-		"dev.golang.pkg/go",
+		"dev.go.pkg/go",
 		web.New(
 			baseURL,
 			web.AllowedDomains("localhost"),
@@ -34,14 +34,20 @@ func Go() site.Site {
 				CleanHTML(),
 				pipe.Container("#page"),
 				pipe.RewriteURLs(
-					"dev.golang.pkg/go",
+					"dev.go.pkg/go",
 					baseURL,
 				).
 					WithURLFilters(urlFilters...).
 					WithDisallowedURLFilters(disallowedURLFilters...).
 					WithDisallowedPaths(disallowedPaths...),
-				pipe.CleanClassName(),
-				// pipe.CleanStyle(),
+				pipe.CleanClassName().
+					WithPreserveClasses(
+						"pkg-name",
+					),
+				pipe.CleanStyle().
+					WithPreserveSelectors(
+						".Ƀkeep_pkg-name",
+					),
 				pipe.SyntaxHighlight(),
 
 				pipe.If(pipe.IsURL(baseURL)).
