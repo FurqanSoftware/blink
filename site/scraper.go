@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"slices"
@@ -76,9 +77,23 @@ L:
 				}
 
 				for _, m := range p.Marks {
+					path := x.Path
+					if m.Href != "" {
+						hrefu, err := url.Parse(m.Href)
+						if err != nil {
+							log.Printf("[E] Failed to parse URL %s: %v", m.Href, err)
+							continue
+						}
+						pathu, err := url.Parse(path)
+						if err != nil {
+							log.Printf("[E] Failed to parse URL %s: %v", path, err)
+							continue
+						}
+						path = pathu.ResolveReference(hrefu).String()
+					}
 					marktree[m.Kind] = append(marktree[m.Kind], Mark{
 						Name: m.Name,
-						Path: x.Path,
+						Path: path,
 					})
 				}
 

@@ -13,7 +13,6 @@ import (
 func CleanHTML() pipe.Filter {
 	return pipe.FilterFunc(func(_ pipe.Context, p pipe.Page) (pipe.Page, error) {
 		p.Doc.Find(`
-			#manual-nav,
 			#stdlib div:has(h2:contains("▹")),
 			#pkg-overview div:has(h2:contains("▹")),
 			#pkg-index div:has(h2:contains("▹")),
@@ -32,7 +31,7 @@ func CleanHTML() pipe.Filter {
 		p.Doc.Find("#community + ul").Remove()
 		p.Doc.Find("#community").Remove()
 
-		p.Doc.Find("#short-nav, #pkg-examples").Each(func(_ int, s *goquery.Selection) {
+		p.Doc.Find("#short-nav, #manual-nav, #pkg-examples").Each(func(_ int, s *goquery.Selection) {
 			s.Find("dl").Each(func(_ int, s *goquery.Selection) {
 				s.Find("dd").Each(func(_ int, s *goquery.Selection) {
 					html, _ := s.Html()

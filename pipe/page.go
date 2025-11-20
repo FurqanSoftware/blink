@@ -25,4 +25,5 @@ type Meta struct {
 type Mark struct {
 	Kind string
 	Name string
+	Href string
 }
