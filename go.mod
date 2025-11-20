@@ -12,7 +12,8 @@ require (
 	github.com/yuin/goldmark v1.4.13
 	golang.org/x/net v0.19.0
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
-	gopkg.in/yaml.v3 v3.0.1
+	golang.org/x/text v0.14.0
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 require (
@@ -32,8 +33,6 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.10 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
-	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

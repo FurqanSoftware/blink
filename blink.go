@@ -4,6 +4,7 @@ import (
 	"log"
 
 	_ "github.com/FurqanSoftware/blink/site/com.cppreference"
+	_ "github.com/FurqanSoftware/blink/site/dev.golang.pkg"
 	_ "github.com/FurqanSoftware/blink/site/org.python.docs"
 	"github.com/spf13/cobra"
 )
