@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Marks</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+		/>
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+	<body class="Ƀ">
+		<main class="container">
+			{{template "marks" dict "marks" .Site.marks "site" .Site}}
+		</main>
+	</body>
+</html>
+
+{{define "marks"}}
+	{{range .marks}}
+		{{template "mark" dict "mark" . "site" $.site}}
+	{{end}}
+{{end}}
+
+{{define "mark"}}
+	{{with .mark.path}}
+		<div>
+			<a href="/{{$.site.key}}{{.}}">{{$.mark.name}}</a>
+		</div>
+	{{else}}
+		<details>
+			<summary>{{.mark.name}}</summary>
+			<div>{{.mark.path}}</div>
+			{{with .mark.marks}}
+				{{template "marks" dict "marks" . "site" $.site}}
+			{{end}}
+		</details>
+	{{end}}
+{{end}}

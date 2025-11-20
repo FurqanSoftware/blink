@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"html/template"
 	"log"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/FurqanSoftware/blink/pipe"
+	"github.com/Masterminds/sprig"
 	"github.com/adrg/frontmatter"
 	"github.com/spf13/cobra"
 )
@@ -25,13 +27,32 @@ var serveCmd = &cobra.Command{
 		http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 			http.ServeFile(w, r, "serve/style.css")
 		})
+		http.HandleFunc("/_/marks", func(w http.ResponseWriter, r *http.Request) {
+			f, err := os.Open(filepath.Join("out", r.URL.Query().Get("site"), "site.json"))
+			if errors.Is(err, os.ErrNotExist) {
+				http.Error(w, "Not Found", http.StatusNotFound)
+				return
+			}
+			tpl, err := template.New("marks.gohtml").Funcs(sprig.FuncMap()).ParseFiles("serve/marks.gohtml")
+			catch(err)
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			site := map[string]any{}
+			err = json.NewDecoder(f).Decode(&site)
+			catch(err)
+			err = tpl.Execute(w, struct {
+				Site map[string]any
+			}{
+				Site: site,
+			})
+			catch(err)
+		})
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			f, err := os.Open(filepath.Join("out", r.URL.Path, "index.html"))
 			if errors.Is(err, os.ErrNotExist) {
 				http.Error(w, "Not Found", http.StatusNotFound)
 				return
 			}
-			tpl, err := template.ParseGlob("serve/*.html")
+			tpl, err := template.New("page.gohtml").Funcs(sprig.FuncMap()).ParseFiles("serve/page.gohtml")
 			catch(err)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			meta := pipe.Meta{}
