@@ -24,14 +24,10 @@ func Meta() pipe.Filter {
 			}
 
 			// Remove "package " prefix if present
-			if strings.HasPrefix(pageTitle, "package ") {
-				pageTitle = strings.TrimPrefix(pageTitle, "package ")
-			}
+			pageTitle = strings.TrimPrefix(pageTitle, "package ")
 
 			// Remove " Go Packages" suffix if present
-			if strings.HasSuffix(pageTitle, " Go Packages") {
-				pageTitle = strings.TrimSuffix(pageTitle, " Go Packages")
-			}
+			pageTitle = strings.TrimSuffix(pageTitle, " Go Packages")
 
 			p.Meta.Title = pageTitle
 		}

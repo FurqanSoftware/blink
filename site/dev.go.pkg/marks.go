@@ -47,9 +47,7 @@ func Marks() pipe.Filter {
 		if pageTitle != "" {
 			packageName = strings.TrimSpace(pageTitle)
 			// Remove "package" prefix if present
-			if strings.HasPrefix(packageName, "package ") {
-				packageName = strings.TrimPrefix(packageName, "package ")
-			}
+			packageName = strings.TrimPrefix(packageName, "package ")
 		}
 
 		// If we have a package name, add it as a mark
