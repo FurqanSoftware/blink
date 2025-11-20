@@ -147,7 +147,7 @@ L:
 	return nil
 }
 
-func (r Scraper) makePage(b io.Writer, s Site, x pipe.Context, p pipe.Page, m *minify.M) error {
+func (r Scraper) makePage(b io.Writer, _ Site, _ pipe.Context, p pipe.Page, m *minify.M) error {
 	html, err := p.Doc.Find("body").Html()
 	if err != nil {
 		return err
