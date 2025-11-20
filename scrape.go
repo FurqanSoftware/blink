@@ -21,9 +21,9 @@ var scrapeCmd = &cobra.Command{
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
-		siteCpp := site.Get(args[0])
+		s := site.Get(args[0])
 		go func() {
-			err := site.Scraper{}.Run(ctx, siteCpp)
+			err := site.Scraper{}.Run(ctx, s)
 			if err != nil {
 				errCh <- err
 			}
