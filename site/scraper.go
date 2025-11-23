@@ -91,9 +91,14 @@ L:
 						}
 						path = pathu.ResolveReference(hrefu).String()
 					}
+					sortkey := m.SortKey
+					if sortkey == "" {
+						sortkey = strings.ToLower(m.Name)
+					}
 					marktree[m.Kind] = append(marktree[m.Kind], Mark{
-						Name: m.Name,
-						Path: path,
+						Name:    m.Name,
+						Path:    path,
+						SortKey: sortkey,
 					})
 				}
 
@@ -132,7 +137,7 @@ L:
 			continue
 		}
 		slices.SortStableFunc(v, func(a, b Mark) int {
-			c := strings.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
+			c := strings.Compare(a.SortKey, b.SortKey)
 			if c == 0 {
 				return strings.Compare(a.Path, b.Path)
 			}
@@ -147,7 +152,7 @@ L:
 		})
 	}
 	slices.SortStableFunc(marks, func(a, b Mark) int {
-		return strings.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
+		return strings.Compare(a.SortKey, b.SortKey)
 	})
 
 	for from, to := range s.redirects {

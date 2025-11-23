@@ -23,7 +23,8 @@ type Meta struct {
 }
 
 type Mark struct {
-	Kind string
-	Name string
-	Href string
+	Kind    string
+	Name    string
+	Href    string
+	SortKey string
 }
