@@ -1,0 +1,16 @@
+# Copyright 2025 Furqan Software Ltd. All rights reserved.
+
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - staticcheck ./...
+
+  lint:tools:install:
+    cmds:
+      - go install honnef.co/go/tools/cmd/staticcheck@2025.1.1
+
+  test:
+    cmds:
+      - go test -v ./...
