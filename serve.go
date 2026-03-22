@@ -33,6 +33,7 @@ var serveCmd = &cobra.Command{
 				http.Error(w, "Not Found", http.StatusNotFound)
 				return
 			}
+			defer f.Close()
 			tpl, err := template.New("marks.gohtml").Funcs(sprig.FuncMap()).ParseFiles("serve/marks.gohtml")
 			catch(err)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -52,6 +53,7 @@ var serveCmd = &cobra.Command{
 				http.Error(w, "Not Found", http.StatusNotFound)
 				return
 			}
+			defer f.Close()
 			tpl, err := template.New("page.gohtml").Funcs(sprig.FuncMap()).ParseFiles("serve/page.gohtml")
 			catch(err)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")

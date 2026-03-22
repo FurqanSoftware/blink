@@ -204,6 +204,7 @@ func (r Scraper) isPageSame(s Site, x pipe.Context, b []byte) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer f.Close()
 	t, err := io.ReadAll(f)
 	if err != nil {
 		return false, err
@@ -222,11 +223,9 @@ func (r Scraper) writePage(s Site, x pipe.Context, b []byte) error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	_, err = f.Write(b)
-	if err != nil {
-		return err
-	}
-	return f.Close()
+	return err
 }
 
 func (r Scraper) writeSiteJSON(s Site, marks []Mark, redirects map[string]string) error {
@@ -241,6 +240,7 @@ func (r Scraper) writeSiteJSON(s Site, marks []Mark, redirects map[string]string
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	b := bytes.Buffer{}
 	err = goldmark.New(
@@ -270,9 +270,5 @@ func (r Scraper) writeSiteJSON(s Site, marks []Mark, redirects map[string]string
 		Redirects:          redirects,
 		UpdatedAt:          time.Now(),
 	})
-	if err != nil {
-		return err
-	}
-
-	return f.Close()
+	return err
 }
