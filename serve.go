@@ -22,6 +22,7 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Serve serves scraped programming language references",
 	Run: func(cmd *cobra.Command, args []string) {
+		addr, _ := cmd.Flags().GetString("addr")
 		errCh := make(chan error)
 
 		http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +72,7 @@ var serveCmd = &cobra.Command{
 		})
 
 		srv := &http.Server{
-			Addr:    ":8080",
+			Addr:    addr,
 			Handler: nil,
 		}
 		go func() {
@@ -103,5 +104,6 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
+	serveCmd.Flags().String("addr", ":8080", "address to listen on")
 	rootCmd.AddCommand(serveCmd)
 }
