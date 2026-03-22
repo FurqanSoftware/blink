@@ -94,7 +94,7 @@ var serveCmd = &cobra.Command{
 			log.Printf("Received %s; exiting", sig)
 		}
 
-		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(7*time.Second))
+		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
 		defer cancel()
 		err := srv.Shutdown(ctx)
 		catch(err)
