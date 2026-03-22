@@ -3,6 +3,10 @@
 version: '3'
 
 tasks:
+  build:
+    cmds:
+      - go build -o blink .
+
   lint:
     cmds:
       - staticcheck ./...
@@ -14,3 +18,11 @@ tasks:
   test:
     cmds:
       - go test -v ./...
+
+  test:ci:
+    cmds:
+      - go install github.com/jstemmer/go-junit-report/v2@v2.1.0
+      - go install github.com/boumenot/gocover-cobertura@v1.3.0
+      - go get .
+      - go test -cover -coverprofile=profile.cov -v . | go-junit-report -out report.xml -iocopy -set-exit-code
+      - $GOPATH/bin/gocover-cobertura < profile.cov > coverage.xml
