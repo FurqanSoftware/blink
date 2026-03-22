@@ -4,6 +4,12 @@ Blink is a programming language documentation and reference scraping and mirrori
 
 ![](screenshot.png)
 
+## Build
+
+``` sh
+task build
+```
+
 ## Usage
 
 Crawl and process documentation using the `scrape` subcommand. It should store the processed HTML files under the `out/` directory.
