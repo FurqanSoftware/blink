@@ -2,6 +2,7 @@ package fs
 
 import (
 	"archive/zip"
+	"context"
 	"errors"
 	"io/fs"
 	"net/http"
@@ -49,14 +50,20 @@ func toHTTPError(err error) (msg string, httpStatus int) {
 }
 
 func (c Crawler) Run(entityCh chan<- crawl.Entity) error {
-	go func() {
-		err := http.ListenAndServe(":24488", FileServer{
+	srv := &http.Server{
+		Addr: ":24488",
+		Handler: FileServer{
 			fs: c.fs,
-		})
-		if err != nil {
+		},
+	}
+	go func() {
+		err := srv.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			panic(err)
 		}
 	}()
+	defer srv.Shutdown(context.Background())
+
 	url, err := url.Parse("http://localhost:24488")
 	if err != nil {
 		return err
